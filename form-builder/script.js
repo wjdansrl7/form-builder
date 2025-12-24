@@ -759,5 +759,96 @@ function initializeSampleForm() {
     setTimeout(() => updateSum100Status(sum100Question.id), 100);
 }
 
-// Initialize on load
-initializeSampleForm();
+// ============================================
+// Share Link Feature
+// ============================================
+const shareBtn = document.getElementById('shareBtn');
+
+shareBtn.addEventListener('click', () => {
+    generateShareLink();
+});
+
+function generateShareLink() {
+    // 1. Prepare data payload
+    const payload = {
+        t: formTitle.value,              // Title
+        d: formDescription.value,        // Description
+        q: questions,                    // Questions array
+        u: googleSheetsUrl               // Google Sheets URL
+    };
+
+    // 2. Serialize and Compress (Base64)
+    // We use a safe way to encode Unicode strings
+    const jsonString = JSON.stringify(payload);
+    const encodedString = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        }));
+
+    // 3. Generate Full URL
+    const baseUrl = window.location.href.split('?')[0]; // Remove existing params
+    const shareUrl = `${baseUrl}?data=${encodedString}`;
+
+    // 4. User Feedback
+    // In a real app, we might use a nice modal. For now, prompt is effective for copying.
+    prompt('아래 링크를 복사해서 공유하세요!', shareUrl);
+}
+
+function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const encodedData = params.get('data');
+
+    if (!encodedData) return false;
+
+    try {
+        // 1. Decode
+        const jsonString = decodeURIComponent(atob(encodedData).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonString);
+
+        // 2. Restore State
+        formTitle.value = payload.t || '';
+        formDescription.value = payload.d || '';
+        questions = payload.q || [];
+        googleSheetsUrl = payload.u || ''; // Temporarily use the sheet URL involved in the link
+
+        // 3. Switch to "Respondent Mode"
+        // Hide Builder UI completely
+        builderMode.style.display = 'none';
+
+        // Hide Header Actions (Builder controls)
+        document.querySelector('.header-actions').style.display = 'none';
+
+        // Show Preview (Form) immediately
+        showPreview();
+
+        // Hide "Back to Edit" buttons in Preview/Results
+        // We override the display style by adding a specific class or setting inline styles
+        const backBtns = document.querySelectorAll('#backToEditBtn, #backToBuilderBtn');
+        backBtns.forEach(btn => btn.style.display = 'none');
+
+        // Adjust headers or other UI elements for a cleaner look
+        document.querySelector('h1').textContent = payload.t || '설문지';
+
+        return true;
+
+    } catch (e) {
+        console.error('Failed to load form from URL:', e);
+        alert('잘못된 설문지 링크입니다.');
+        return false;
+    }
+}
+
+// ============================================
+// Initialize
+// ============================================
+
+// Check if we are loading a shared link
+const isSharedLink = loadFromUrl();
+
+// Only initialize sample data if NOT opening a shared link
+if (!isSharedLink) {
+    initializeSampleForm();
+}
