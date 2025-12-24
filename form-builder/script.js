@@ -787,7 +787,7 @@ function generateShareLink() {
 
     // 3. Generate Full URL
     const baseUrl = window.location.href.split('?')[0]; // Remove existing params
-    const shareUrl = `${baseUrl}?data=${encodedString}`;
+    const shareUrl = `${baseUrl}?data=${encodeURIComponent(encodedString)}`;
 
     // 4. User Feedback
     // In a real app, we might use a nice modal. For now, prompt is effective for copying.
