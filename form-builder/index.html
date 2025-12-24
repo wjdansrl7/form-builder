@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>현대종합금속 설문지</title>
+    <meta name="description" content="구글 폼 스타일의 설문 빌더. 100점 합계 제약 기능 포함">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>📋 현대종합금속 설문지</h1>
+                <!-- <p>Google Forms 스타일 설문지 만들기</p> -->
+            </div>
+            <div class="header-actions">
+                <button id="settingsBtn" class="btn btn-outline">
+                    <span>⚙️</span> 설정
+                </button>
+                <button id="previewBtn" class="btn btn-secondary">
+                    <span>👁️</span> 미리보기
+                </button>
+                <button id="resetBtn" class="btn btn-outline">
+                    <span>🔄</span> 초기화
+                </button>
+            </div>
+        </header>
+
+        <!-- Builder Mode -->
+        <div id="builderMode" class="mode-container">
+            <div class="form-title-section card">
+                <input type="text" id="formTitle" class="form-title-input" placeholder="설문지 제목" value="새로운 설문">
+                <textarea id="formDescription" class="form-description-input" placeholder="설문지 설명 (선택사항)"></textarea>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="questionsContainer"></div>
+
+            <!-- Add Question Buttons -->
+            <div class="add-question-section card">
+                <h3>질문 추가</h3>
+                <div class="question-type-grid">
+                    <button class="question-type-btn" data-type="short">
+                        <span class="icon">📝</span>
+                        <span class="label">단답형</span>
+                    </button>
+                    <button class="question-type-btn" data-type="paragraph">
+                        <span class="icon">📄</span>
+                        <span class="label">주관식</span>
+                    </button>
+                    <button class="question-type-btn" data-type="multiple">
+                        <span class="icon">🔘</span>
+                        <span class="label">객관식</span>
+                    </button>
+                    <button class="question-type-btn" data-type="checkbox">
+                        <span class="icon">☑️</span>
+                        <span class="label">체크박스</span>
+                    </button>
+                    <button class="question-type-btn highlight" data-type="sum100">
+                        <span class="icon">💯</span>
+                        <span class="label">합계 100점</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Mode -->
+        <div id="previewMode" class="mode-container" style="display: none;">
+            <div class="preview-header card">
+                <h2 id="previewTitle"></h2>
+                <p id="previewDescription"></p>
+            </div>
+            <form id="previewForm">
+                <div id="previewQuestionsContainer"></div>
+                <div class="form-actions">
+                    <button type="button" id="backToEditBtn" class="btn btn-outline">
+                        <span>←</span> 편집으로 돌아가기
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>✓</span> 제출하기
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Mode -->
+        <div id="resultsMode" class="mode-container" style="display: none;">
+            <div class="results-header card">
+                <div class="success-icon">✓</div>
+                <h2>제출 완료!</h2>
+                <p>응답이 성공적으로 기록되었습니다.</p>
+            </div>
+            <div id="resultsContainer" class="card"></div>
+            <div class="form-actions">
+                <button id="newResponseBtn" class="btn btn-secondary">
+                    <span>📝</span> 새 응답 작성
+                </button>
+                <button id="backToBuilderBtn" class="btn btn-outline">
+                    <span>🔧</span> 폼 편집하기
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal" style="display: none;">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Google Sheets 연동 설정</h2>
+                    <button class="modal-close-btn" id="closeSettingsBtn">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">
+                        여러 사람의 응답을 수집하려면 Google Sheets를 설정하세요.
+                        <a href="#" id="setupGuideLink" style="color: var(--primary-light);">📖 설정 가이드 보기</a>
+                    </p>
+
+                    <div class="form-group">
+                        <label for="sheetsUrl">Google Apps Script 웹 앱 URL</label>
+                        <input type="url" id="sheetsUrl" class="settings-input"
+                            placeholder="https://script.google.com/macros/s/...">
+                        <small class="input-hint">
+                            URL을 입력하지 않으면 응답이 저장되지 않습니다 (로컬에서만 표시)
+                        </small>
+                    </div>
+
+                    <div class="connection-status" id="connectionStatus" style="display: none;">
+                        <span class="status-indicator"></span>
+                        <span class="status-text"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="clearUrlBtn">URL 삭제</button>
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <span>✓</span> 저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
